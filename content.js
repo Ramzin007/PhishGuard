@@ -23,7 +23,8 @@ async function runPhishGuard() {
             url: response.urlScore,
             reputation: response.reputationScore,
             content: contentScore,
-            communityReports: response.communityReports || 0
+            communityReports: response.communityReports || 0,
+            domainAge: response.domainAge
         };
 
         const finalRisk = riskScorer.calculate(results, isLocalFile);

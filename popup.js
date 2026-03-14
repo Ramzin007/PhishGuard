@@ -20,6 +20,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.getElementById('community-reports').innerText = reportCount;
             });
 
+            // Fetch domain age via background analysis
+            chrome.runtime.sendMessage({ action: "analyzeSite", url: url }, (response) => {
+                if (response && response.domainAge) {
+                    const age = response.domainAge;
+                    const badge = document.getElementById('domain-age-badge');
+                    const value = document.getElementById('domain-age-value');
+                    
+                    value.innerText = age.label;
+                    
+                    if (age.ageInDays < 30) {
+                        badge.style.background = "rgba(239, 68, 68, 0.2)";
+                        badge.style.color = "#ef4444";
+                    } else if (age.ageInDays < 365) {
+                        badge.style.background = "rgba(245, 158, 11, 0.2)";
+                        badge.style.color = "#f59e0b";
+                    }
+                }
+            });
+
             // Report button handler
             const reportBtn = document.getElementById('report-unsafe');
             reportBtn.onclick = () => {

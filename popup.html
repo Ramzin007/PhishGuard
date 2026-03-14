@@ -29,14 +29,15 @@
         .logo {
             width: 32px;
             height: 32px;
-            background: #3b82f6;
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            overflow: hidden;
             box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .title {
@@ -105,14 +106,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">P</div>
+            <div class="logo">
+                <img src="icons/icon128.png" alt="PhishGuard Logo">
+            </div>
             <div class="title">PhishGuard</div>
         </div>
 
         <div class="status-card">
-            <div class="status-icon">🛡️</div>
+            <div class="status-icon">Good</div>
             <div class="status-text">Your Browsing is Protected</div>
-            <div style="font-size: 0.8rem; color: #94a3b8;">Real-time analysis active</div>
+            <div id="domain-age-badge" style="display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-size: 0.75rem; font-weight: 700; margin-top: 8px;">
+                Domain Age: <span id="domain-age-value">Checking...</span>
+            </div>
         </div>
 
         <div class="stats-grid">

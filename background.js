@@ -27,6 +27,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     reputation.checkBlacklist(hostname).then(async blacklistScore => {
         const typosquattingScore = reputation.checkTyposquatting(hostname);
         
+        // Fetch domain age info
+        const ageInfo = reputation.getDomainAge(hostname);
+        
         // Fetch community reports from storage
         const storageResult = await chrome.storage.local.get(['communityReports']);
         const reports = storageResult.communityReports || {};
@@ -34,11 +37,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         
         const reputationScore = Math.max(blacklistScore, typosquattingScore);
 
-        // Send back results including community reports
+        // Send back results including community reports and domain age
         sendResponse({
             urlScore: urlScore,
             reputationScore: reputationScore,
-            communityReports: reportCount
+            communityReports: reportCount,
+            domainAge: ageInfo
         });
     });
 
