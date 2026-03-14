@@ -1,79 +1,36 @@
 /**
- * content/contentScript.js
- * Entry point for content environment. Extracts data, sends it for analysis,
- * and handles UI injection if a threat is detected.
+ * src/content/contentScript.js
+ * Member 1: Responsible for extracting page data and sending it for analysis.
  */
 
-(async () => {
-  try {
-    // extractPageData is globally available because domExtractor.js is injected
-    // just before this script in manifest.json
-    const pageData = extractPageData();
+console.log("[PhishGuard] Content script loaded.");
 
-    // Send the extracted data to the background worker
-    chrome.runtime.sendMessage(
-      { type: 'ANALYZE_PAGE', payload: pageData },
-      (response) => {
-        if (chrome.runtime.lastError) {
-          console.warn('[PhishGuard] Connection to extension failed:', chrome.runtime.lastError.message);
-          return;
-        }
-
-        if (response && response.riskScore > 60) {
-          injectWarningBanner();
-        }
-      }
-    );
-
-  } catch (err) {
-    console.error('[PhishGuard] Failed to execute content script:', err);
-  }
-})();
-
-function injectWarningBanner() {
-  if (document.getElementById('phishguard-warning-ui')) return;
-
-  const banner = document.createElement('div');
-  banner.id = 'phishguard-warning-ui';
-  
-  Object.assign(banner.style, {
-    position: 'fixed',
-    top: '0',
-    left: '0',
-    width: '100%',
-    backgroundColor: '#ff4c4c',
-    color: '#ffffff',
-    textAlign: 'center',
-    padding: '12px 20px',
-    zIndex: '2147483647',
-    fontFamily: 'sans-serif',
-    fontSize: '16px',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxSizing: 'border-box'
-  });
-
-  const message = document.createElement('span');
-  message.textContent = '⚠ Potential phishing website detected. Proceed with extreme caution.';
-  message.style.fontWeight = 'bold';
-
-  const closeBtn = document.createElement('button');
-  closeBtn.textContent = 'Dismiss';
-  Object.assign(closeBtn.style, {
-    backgroundColor: 'white',
-    color: '#ff4c4c',
-    border: 'none',
-    padding: '6px 12px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontWeight: 'bold'
-  });
-
-  closeBtn.addEventListener('click', () => banner.remove());
-
-  banner.appendChild(message);
-  banner.appendChild(closeBtn);
-  document.body.prepend(banner);
+function extractPageData() {
+    const pageData = {
+        url: window.location.href,
+        title: document.title,
+        text: document.body.innerText.substring(0, 5000), // Limit text for performance
+        hasLoginForm: !!document.querySelector("input[type='password']")
+    };
+    return pageData;
 }
+
+// Perform initial scan
+const data = extractPageData();
+console.log("[PhishGuard] Extracted Page Data:", data);
+
+chrome.runtime.sendMessage({
+    type: "SCAN_PAGE",
+    payload: data
+}, (response) => {
+    if (chrome.runtime.lastError) {
+        console.error("[PhishGuard] Message error:", chrome.runtime.lastError);
+        return;
+    }
+    console.log("[PhishGuard] Analysis received:", response);
+    
+    // In the final version, this response will trigger Member 4's UI overlay
+    if (response && response.riskScore > 60) {
+        console.warn("[PhishGuard] HIGH RISK DETECTED:", response.reasons);
+    }
+});

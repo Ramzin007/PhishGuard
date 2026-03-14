@@ -1,13 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "PhishGuard AI",
+  "name": "PhishGuard",
   "version": "1.0.0",
-  "description": "Detects phishing and scam websites in real-time.",
+  "description": "Real-time phishing detection for 8-hour hackathon.",
   "permissions": [
     "activeTab",
     "scripting",
     "storage",
-    "tabs"
+    "tabs",
+    "webNavigation"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -18,17 +19,23 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": [
-        "src/content/domExtractor.js",
-        "src/content/contentScript.js"
+
+      "matches": [
+        "<all_urls>"
       ],
-      "run_at": "document_end"
+      "js": [
+        "src/content/warningPopup.js"
+      ],
+      "run_at": "document_sta
     }
   ],
   "action": {
     "default_popup": "src/popup/popup.html",
-    "default_title": "PhishGuard Analysis"
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
   },
   "icons": {
     "16": "assets/icons/icon16.png",
