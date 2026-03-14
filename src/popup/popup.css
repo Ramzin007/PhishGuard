@@ -1,0 +1,105 @@
+/**
+ * popup/popup.css
+ * Styling for the popup dashboard.
+ */
+
+:root {
+  --bg-color: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --safe-color: #10b981;
+  --danger-color: #ef4444;
+}
+
+body {
+  width: 320px;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background-color: #3b82f6;
+  color: white;
+  padding: 16px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+main {
+  padding: 16px;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+#loading {
+  text-align: center;
+  padding: 30px 0;
+  color: var(--text-secondary);
+}
+
+.site-info {
+  margin-bottom: 20px;
+}
+
+.site-info h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.url-display {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  word-wrap: break-word;
+}
+
+.score-container {
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.score-container h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.score-container.safe { color: var(--safe-color); border: 1px solid var(--safe-color); }
+.score-container.danger { color: var(--danger-color); border: 1px solid var(--danger-color); }
+
+.reasons-box h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+#reasons-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+#reasons-list li {
+  margin-bottom: 6px;
+}

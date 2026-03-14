@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PhishGuard Analysis</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PhishGuard AI</h1>
+    </header>
+    
+    <main>
+      <div id="loading" class="view active">
+        <p>Analyzing website...</p>
+      </div>
+
+      <div id="results" class="view">
+        <div class="site-info">
+          <h3>Site Risk Analysis</h3>
+          <p id="site-url" class="url-display">example.com</p>
+        </div>
+
+        <div id="score-container" class="score-container">
+          <h2>Risk Score: <span id="risk-score">0</span></h2>
+        </div>
+
+        <div class="reasons-box">
+          <h3>Reasons:</h3>
+          <ul id="reasons-list">
+            <!-- Reasons injected here -->
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
