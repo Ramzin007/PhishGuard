@@ -4,33 +4,87 @@
   <meta charset="UTF-8">
   <title>PhishGuard Analysis</title>
   <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>PhishGuard AI</h1>
+    <header class="app-header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="shield-icon">
+          <path d="M12 22S19 18 19 11V5L12 2L5 5V11C5 18 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="title-container">
+        <h1>PhishGuard</h1>
+        <span class="subtitle">REAL-TIME PROTECTION</span>
+      </div>
+      <div class="global-status safe" id="global-status-badge">
+        <span class="status-dot"></span> <span id="global-status-text">SAFE</span>
+      </div>
     </header>
     
+    <div class="url-bar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+      </svg>
+      <span id="site-url">example.com</span>
+    </div>
+
     <main>
       <div id="loading" class="view active">
+        <div class="spinner"></div>
         <p>Analyzing website...</p>
       </div>
 
       <div id="results" class="view">
-        <div class="site-info">
-          <h3>Site Risk Analysis</h3>
-          <p id="site-url" class="url-display">example.com</p>
+        <div class="card result-card">
+          <div class="card-header">
+            <span class="card-title">TRUST SCORE</span>
+            <span class="status-badge" id="card-status-badge">Safe</span>
+          </div>
+          
+          <div class="score-display">
+            <div class="circular-meter">
+              <svg viewBox="0 0 100 100">
+                <circle class="meter-bg" cx="50" cy="50" r="40" />
+                <circle class="meter-value" id="meter-path" cx="50" cy="50" r="40" />
+              </svg>
+              <div class="score-text">
+                <div class="score-number" id="risk-score">0</div>
+                <div class="score-total">/100</div>
+              </div>
+            </div>
+            <div class="status-text" id="status-text">SAFE</div>
+          </div>
+
+          <div class="linear-meter">
+            <div class="meter-bar">
+              <div class="meter-fill" id="linear-fill"></div>
+              <div class="meter-indicator" id="linear-indicator"></div>
+            </div>
+            <div class="meter-labels">
+              <span>0</span>
+              <span>40</span>
+              <span>80</span>
+              <span>100</span>
+            </div>
+          </div>
+
+          <div class="details-list" id="reasons-list">
+            <!-- Details generated here -->
+          </div>
         </div>
 
-        <div id="score-container" class="score-container">
-          <h2>Risk Score: <span id="risk-score">0</span></h2>
-        </div>
-
-        <div class="reasons-box">
-          <h3>Reasons:</h3>
-          <ul id="reasons-list">
-            <!-- Reasons injected here -->
-          </ul>
+        <div class="card test-card">
+           <div class="card-title mb-2">PREVIEW MODE — TEST SCORE</div>
+           <div class="test-buttons">
+              <button class="test-btn safe" data-score="15">Safe</button>
+              <button class="test-btn suspicious" data-score="45">Suspicious</button>
+              <button class="test-btn danger" data-score="85">Danger</button>
+           </div>
         </div>
       </div>
     </main>
