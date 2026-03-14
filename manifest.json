@@ -7,7 +7,8 @@
     "activeTab",
     "scripting",
     "storage",
-    "tabs"
+    "tabs",
+    "webNavigation"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -18,12 +19,13 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": [
-        "src/content/domExtractor.js",
-        "src/content/contentScript.js"
+      "matches": [
+        "<all_urls>"
       ],
-      "run_at": "document_end"
+      "js": [
+        "src/content/warningPopup.js"
+      ],
+      "run_at": "document_start"
     }
   ],
   "action": {

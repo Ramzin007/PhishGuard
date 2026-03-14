@@ -1,50 +1,66 @@
+import { analyzeDomain } from './domainAnalyzer.js';
+
 /**
- * background/background.js
- * Service Worker: Orchestrates messaging and invokes the risk engine.
+ * PhishGuard AI - Background Service Worker
+ * Orchestrates navigation-level security analysis.
  */
-import { analyzeRisk } from './riskEngine.js';
 
-// Cache results so the popup can retrieve them instantly without re-analyzing
-const analysisCache = {};
+// 1. Analyze URLs before page load using webNavigation
+chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
+  // Only analyze main frame (top-level) navigation
+  if (details.frameId !== 0) return;
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'ANALYZE_PAGE') {
-    const tabId = sender.tab.id;
-    const pageData = request.payload;
+  const url = details.url;
+  if (!url || !url.startsWith('http')) return;
 
-    try {
-      // Run modular risk analysis
-      const result = analyzeRisk(pageData);
-      
-      // Store result in local memory for popup UI
-      analysisCache[tabId] = result;
-      
-      // Also persist to Chrome storage so it survives service worker sleep
-      chrome.storage.local.set({ [`risk_${tabId}`]: result });
+  const result = analyzeDomain(url);
 
-      // Send response back to the content script synchronously
-      sendResponse(result);
-    } catch (error) {
-      console.error('[PhishGuard] Analysis error:', error);
-      sendResponse({ error: 'Failed to complete analysis' });
-    }
-    
-  } else if (request.type === 'GET_RESULT') {
-    // The Popup UI asks for the result
-    const tabId = request.tabId;
-    if (analysisCache[tabId]) {
-      sendResponse(analysisCache[tabId]);
-    } else {
-      chrome.storage.local.get([`risk_${tabId}`], (data) => {
-        sendResponse(data[`risk_${tabId}`] || null);
-      });
-      return true; // asynchronous response via storage
-    }
+  console.log(`[PhishGuard] Preliminary Analysis for ${url}:`, result);
+
+  if (result.riskScore > 50) {
+    console.warn(`[PhishGuard] HIGH RISK detected: ${result.riskScore}. Pre-loading warning...`);
+
+    // Send warning to content script once it loads
+    // We use a small delay or retry to ensure content script is ready, 
+    // but usually onBeforeNavigate allows enough lead time for the listener to exist.
+    // In Manifest V3, we often wait for the tab to complete update or use sendMessage with a retry.
+
+    // Note: Since content scripts (warningPopup.js) will be injected at document_start,
+    // they should be ready to receive messages shortly after navigation.
+
+    // Store result temporarily to retrieve it on tab load if message delivery fails early
+    chrome.storage.local.set({ [`pending_warning_${details.tabId}`]: result });
+  }
+
+  // Update badge immediately
+  updateBadge(result.riskScore, details.tabId);
+});
+
+// 2. Secondary check on tab completion as a fallback/refinement
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('http')) {
+    chrome.storage.local.get([`pending_warning_${tabId}`]).then(res => {
+      const result = res[`pending_warning_${tabId}`];
+      if (result) {
+        chrome.tabs.sendMessage(tabId, {
+          type: "PHISHING_WARNING",
+          url: result.domain,
+          suggestion: result.suggestedDomain
+        }).catch(err => {
+          console.log("[PhishGuard] Message delivery deferred until script injection.");
+        });
+
+        // Clear pending
+        chrome.storage.local.remove(`pending_warning_${tabId}`);
+      }
+    });
   }
 });
 
-// Clean up cache when tabs close
-chrome.tabs.onRemoved.addListener((tabId) => {
-  delete analysisCache[tabId];
-  chrome.storage.local.remove(`risk_${tabId}`);
-});
+function updateBadge(score, tabId) {
+  let color = score > 50 ? '#ea4335' : (score > 20 ? '#fbbc05' : '#34a853');
+  let text = score > 50 ? '!!' : (score > 20 ? '!' : 'OK');
+
+  chrome.action.setBadgeBackgroundColor({ color, tabId });
+  chrome.action.setBadgeText({ text, tabId });
+}
