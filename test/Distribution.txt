@@ -1,0 +1,342 @@
+Member 1 — Extension Core / Infrastructure
+
+This is the most critical role.
+They control how everything communicates.
+
+Responsibility
+
+Build the Chrome extension runtime.
+
+Files owned
+manifest.json
+src/background/background.js
+src/content/contentScript.js
+Tasks
+
+Create Manifest V3 extension
+
+Important config:
+
+permissions:
+- activeTab
+- scripting
+- storage
+- tabs
+
+Host permissions:
+
+<all_urls>
+
+Define:
+
+background service worker
+
+content script
+
+popup
+
+Implement content script
+
+Runs on every website.
+
+Collect data:
+
+URL
+page title
+visible page text
+login form detection
+
+Example logic:
+
+const pageData = {
+ url: window.location.href,
+ title: document.title,
+ text: document.body.innerText,
+ hasLoginForm: !!document.querySelector("input[type='password']")
+}
+
+chrome.runtime.sendMessage({
+ type: "SCAN_PAGE",
+ data: pageData
+})
+Implement message receiver
+
+Background script receives scan request.
+
+contentScript → background.js
+
+Example:
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+
+ if (msg.type === "SCAN_PAGE") {
+   const result = analyzeRisk(msg.data)
+   sendResponse(result)
+ }
+
+})
+
+Member 1 defines data contract used by the entire team.
+
+Example:
+
+INPUT
+
+{
+ url,
+ title,
+ text,
+ hasLoginForm
+}
+
+OUTPUT
+
+{
+ riskScore,
+ reasons
+}
+
+If this contract is not fixed early, integration will collapse.
+
+Member 2 — Domain Intelligence / URL Analyzer
+
+Focus only on URL-based phishing detection.
+
+Files owned
+src/background/domainAnalyzer.js
+src/utils/levenshtein.js
+Feature 1 — Typosquatting detection
+
+Example attacks:
+
+amaz0n.com
+paypaI.com
+g00gle-security.net
+
+Compare domain with popular domains.
+
+Example list:
+
+amazon.com
+paypal.com
+google.com
+facebook.com
+microsoft.com
+
+Use Levenshtein distance.
+
+Example rule:
+
+distance <= 2 → suspicious
+Feature 2 — Suspicious keywords in URL
+
+Detect patterns like:
+
+verify-account
+secure-login
+update-info
+account-security
+
+Example:
+
+paypal-security-login.xyz
+
+Add risk score.
+
+Feature 3 — Suspicious TLD
+
+Certain TLDs are heavily abused:
+
+.xyz
+.top
+.click
+.site
+
+Example scoring logic:
+
+typosquatting = +50
+suspicious TLD = +20
+phishing keywords = +20
+
+Return:
+
+domainRisk = 0–100
+Member 3 — Scam Content Detection (NLP)
+
+This member analyzes page content, not URL.
+
+Files owned
+src/background/nlpAnalyzer.js
+src/content/domExtractor.js
+Step 1 — Extract text
+
+Use text already collected by content script.
+
+Step 2 — Detect scam language
+
+Common phishing phrases:
+
+verify your account
+urgent action required
+security alert
+account suspended
+limited time
+confirm your identity
+
+Simple detection approach:
+
+keyword matching
+
+Example:
+
+if phrase appears → increase risk
+Step 3 — Detect login forms
+
+Phishing sites often request credentials.
+
+Check for:
+
+input[type="password"]
+
+Add risk score.
+
+Example scoring:
+
+password form present = +30
+scam language detected = +40
+
+Return:
+
+languageRisk
+Member 4 — UI / Warning System
+
+Most teams ignore UX. Judges notice good UX.
+
+Files owned
+src/popup/popup.html
+src/popup/popup.js
+src/popup/popup.css
+Feature 1 — Popup dashboard
+
+When extension icon is clicked show:
+
+Site Risk Analysis
+
+Domain Risk: 70
+Scam Language: 40
+Login Form: detected
+
+Final Score: 65
+Feature 2 — Warning banner
+
+If risk score > 60, inject warning.
+
+Example UI:
+
+⚠ Potential phishing website detected
+
+Reasons:
+• Domain similar to paypal.com
+• Suspicious login form
+• Urgent language detected
+
+Injection example:
+
+const banner = document.createElement("div")
+banner.innerText = "⚠ Potential phishing site detected"
+document.body.prepend(banner)
+
+Style with CSS.
+
+Risk Engine (Integration)
+
+Member 1 integrates all signals.
+
+Create:
+
+riskEngine.js
+
+Example formula:
+
+riskScore =
+0.4 * domainRisk +
+0.4 * languageRisk +
+0.2 * formRisk
+
+Classification:
+
+0–30 safe
+30–60 suspicious
+60–100 phishing
+
+Return:
+
+{
+ riskScore: 72,
+ reasons: [
+   "Domain similar to paypal.com",
+   "Urgent language detected",
+   "Login form present"
+ ]
+}
+Development Timeline (10-hour hackathon)
+Hour 1
+
+Define:
+
+folder structure
+data contracts
+risk score format
+Hour 2–5
+
+Parallel development.
+
+Member 1
+Extension core.
+
+Member 2
+Domain analyzer.
+
+Member 3
+Content detection.
+
+Member 4
+UI dashboard.
+
+Hour 5–7
+
+Integration.
+
+Hour 7–9
+
+Create demo phishing sites:
+
+fake-amazon-login.html
+paypal-verification.html
+google-security-alert.html
+
+Test extension.
+
+Hour 9–10
+
+Prepare pitch.
+
+One Smart Trick for Judges
+
+Show Explainable AI.
+
+Instead of:
+
+Phishing detected
+
+Show:
+
+Risk Score: 82%
+
+Reasons:
+• Domain resembles paypal.com
+• Domain created recently
+• Login form detected
+• Urgent scam language found
+
+That makes the system look like a real cybersecurity product.
