@@ -17,10 +17,12 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
 
   console.log(`[PhishGuard] Preliminary Analysis for ${url}:`, result);
 
+  // Store result for the popup to retrieve
+  chrome.storage.local.set({ [`analysis_${details.tabId}`]: result });
+
   if (result.riskScore >= 50 && result.suggestedDomain) {
     console.warn(`[PhishGuard] Typosquat detected: ${result.riskScore}. Pre-loading warning...`);
-
-    // Store result to trigger the warning popup in the content script
+    // Store pending warning specifically for the content script
     chrome.storage.local.set({ [`pending_warning_${details.tabId}`]: result });
   }
 
@@ -46,6 +48,35 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         chrome.storage.local.remove(`pending_warning_${tabId}`);
       }
     });
+
+    // Refresh analysis on update and store
+    const result = analyzeDomain(tab.url);
+    chrome.storage.local.set({ [`analysis_${tabId}`]: result });
+  }
+});
+
+// 3. Handle requests from the popup UI
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'GET_RESULT') {
+    const tabId = message.tabId;
+    chrome.storage.local.get([`analysis_${tabId}`]).then(res => {
+      const result = res[`analysis_${tabId}`];
+      if (result) {
+        sendResponse(result);
+      } else {
+        // If not analyzed yet, run it now
+        chrome.tabs.get(tabId, (tab) => {
+          if (tab && tab.url) {
+            const freshResult = analyzeDomain(tab.url);
+            chrome.storage.local.set({ [`analysis_${tabId}`]: freshResult });
+            sendResponse(freshResult);
+          } else {
+            sendResponse(null);
+          }
+        });
+      }
+    });
+    return true; // Keep channel open for async response
   }
 });
 

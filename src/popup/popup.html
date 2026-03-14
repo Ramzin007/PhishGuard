@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>PhishGuard Analysis</title>
   <link rel="stylesheet" href="popup.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <div class="container">
     <header class="app-header">
       <div class="logo">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="shield-icon">
-          <path d="M12 22S19 18 19 11V5L12 2L5 5V11C5 18 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 22S19 18 19 11V5L12 2L5 5V11C5 18 12 22 12 22Z" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
       </div>
       <div class="title-container">
@@ -23,7 +27,7 @@
         <span class="status-dot"></span> <span id="global-status-text">SAFE</span>
       </div>
     </header>
-    
+
     <div class="url-bar">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"></circle>
@@ -45,7 +49,7 @@
             <span class="card-title">TRUST SCORE</span>
             <span class="status-badge" id="card-status-badge">Safe</span>
           </div>
-          
+
           <div class="score-display">
             <div class="circular-meter">
               <svg viewBox="0 0 100 100">
@@ -76,20 +80,25 @@
           <div class="details-list" id="reasons-list">
             <!-- Details generated here -->
           </div>
+
+          <div id="suggestion-container">
+            <!-- Suggestion box injected here -->
+          </div>
         </div>
 
         <div class="card test-card">
-           <div class="card-title mb-2">PREVIEW MODE — TEST SCORE</div>
-           <div class="test-buttons">
-              <button class="test-btn safe" data-score="15">Safe</button>
-              <button class="test-btn suspicious" data-score="45">Suspicious</button>
-              <button class="test-btn danger" data-score="85">Danger</button>
-           </div>
+          <div class="card-title mb-2">PREVIEW MODE — TEST SCORE</div>
+          <div class="test-buttons">
+            <button class="test-btn safe" data-score="15">Safe</button>
+            <button class="test-btn suspicious" data-score="45">Suspicious</button>
+            <button class="test-btn danger" data-score="85">Danger</button>
+          </div>
         </div>
       </div>
     </main>
   </div>
-  
+
   <script src="popup.js"></script>
 </body>
+
 </html>

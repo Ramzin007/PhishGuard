@@ -136,7 +136,7 @@ export function analyzeDomain(url) {
 
     let threatLevel = "SAFE";
     if (riskScore >= 51) {
-        threatLevel = "HIGH RISK";
+        threatLevel = "DANGER";
     } else if (riskScore >= 21) {
         threatLevel = "SUSPICIOUS";
     }
