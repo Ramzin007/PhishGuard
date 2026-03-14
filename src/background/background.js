@@ -17,18 +17,10 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
 
   console.log(`[PhishGuard] Preliminary Analysis for ${url}:`, result);
 
-  if (result.riskScore > 50) {
-    console.warn(`[PhishGuard] HIGH RISK detected: ${result.riskScore}. Pre-loading warning...`);
+  if (result.riskScore >= 50 && result.suggestedDomain) {
+    console.warn(`[PhishGuard] Typosquat detected: ${result.riskScore}. Pre-loading warning...`);
 
-    // Send warning to content script once it loads
-    // We use a small delay or retry to ensure content script is ready, 
-    // but usually onBeforeNavigate allows enough lead time for the listener to exist.
-    // In Manifest V3, we often wait for the tab to complete update or use sendMessage with a retry.
-
-    // Note: Since content scripts (warningPopup.js) will be injected at document_start,
-    // they should be ready to receive messages shortly after navigation.
-
-    // Store result temporarily to retrieve it on tab load if message delivery fails early
+    // Store result to trigger the warning popup in the content script
     chrome.storage.local.set({ [`pending_warning_${details.tabId}`]: result });
   }
 

@@ -21,9 +21,7 @@ const suspiciousTLDs = [
     ".xyz",
     ".top",
     ".click",
-    ".site",
-    ".gq",
-    ".tk"
+    ".site"
 ];
 
 /**
@@ -85,21 +83,12 @@ export function checkTyposquatting(domain) {
     for (const trusted of popularDomains) {
         const distance = levenshteinDistance(domainToken, trusted.brand);
 
-        // If exact match but not official domain (or subdomain/alt path of it)
-        if (distance === 0) {
-            if (domain.toLowerCase() !== trusted.domain.toLowerCase()) {
-                return {
-                    isTyposquat: true,
-                    matchedBrand: trusted.brand,
-                    suggestedDomain: trusted.domain,
-                    distance: 0
-                };
-            } else {
-                return { isTyposquat: false, matchedBrand: trusted.brand, distance: 0 };
+        if (distance <= 2) {
+            // If it's the exact official domain, it's NOT typosquatting
+            if (domain.toLowerCase() === trusted.domain.toLowerCase()) {
+                return { isTyposquat: false, matchedBrand: trusted.brand, distance: distance };
             }
-        }
 
-        if (distance > 0 && distance <= 2) {
             return {
                 isTyposquat: true,
                 matchedBrand: trusted.brand,
@@ -157,9 +146,12 @@ export function analyzeDomain(url) {
         domain: domain,
         riskScore: riskScore,
         threatLevel: threatLevel,
-        matchedBrand: typoResult.matchedBrand || null,
-        suggestedDomain: typoResult.suggestedDomain || null,
-        signals: signals
+        signals: {
+            typosquatting: signals.typosquatting,
+            suspiciousTLD: signals.suspiciousTLD,
+            phishingKeywords: signals.phishingKeywords
+        },
+        suggestedDomain: typoResult.suggestedDomain || null
     };
 }
 
