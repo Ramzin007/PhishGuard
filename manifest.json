@@ -26,7 +26,7 @@
       "js": [
         "src/content/warningPopup.js"
       ],
-      "run_at": "document_sta
+      "run_at": "document_start"
     }
   ],
   "action": {
