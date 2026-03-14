@@ -5,11 +5,37 @@
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "PHISHING_WARNING") {
-        showPhishingPopup(message.url, message.suggestion);
+        showPhishingPopup(message.url, message.suggestion, message.reasons);
     }
 });
 
-function showPhishingPopup(currentUrl, suggestion) {
+// Member 1 Contribution: DOM Extraction Bridge
+function extractAndScan() {
+    const pageData = {
+        url: window.location.href,
+        title: document.title,
+        text: document.body.innerText.substring(0, 5000),
+        hasLoginForm: !!document.querySelector("input[type='password']")
+    };
+
+    chrome.runtime.sendMessage({
+        type: "SCAN_PAGE",
+        payload: pageData
+    }, (response) => {
+        if (response && response.riskScore > 50) {
+            showPhishingPopup(response.url, response.suggestion, response.reasons);
+        }
+    });
+}
+
+// Start extraction
+if (document.readyState === 'complete') {
+    extractAndScan();
+} else {
+    window.addEventListener('load', extractAndScan);
+}
+
+function showPhishingPopup(currentUrl, suggestion, reasons = []) {
     // Prevent multiple popups
     if (document.getElementById('phishguard-warning-overlay')) return;
 

@@ -39,7 +39,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         chrome.tabs.sendMessage(tabId, {
           type: "PHISHING_WARNING",
           url: result.domain,
-          suggestion: result.suggestedDomain
+          suggestion: result.suggestedDomain,
+          reasons: ["Suspicious domain pattern detected by Member 2"]
         }).catch(err => {
           console.log("[PhishGuard] Message delivery deferred until script injection.");
         });
@@ -78,6 +79,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
     return true; // Keep channel open for async response
   }
+});
+
+// Member 1 Contribution: Handle SCAN_PAGE from DOM extraction
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.type === "SCAN_PAGE") {
+        console.log("[PhishGuard] Received complex scan request for:", request.payload.url);
+        
+        // Combine Member 2's Domain analysis with Member 1's Extraction data
+        const domainResult = analyzeDomain(request.payload.url);
+        
+        // Final fused risk score (Member 1 integration logic)
+        const fusionResult = {
+            riskScore: domainResult.riskScore,
+            reasons: domainResult.riskScore > 0 ? [`Domain: ${domainResult.threatLevel}`] : ["Safe domain structure"],
+            url: domainResult.url,
+            suggestion: domainResult.suggestedDomain
+        };
+
+        if (request.payload.hasLoginForm && domainResult.riskScore > 20) {
+            fusionResult.riskScore += 15;
+            fusionResult.reasons.push("WARNING: Suspicious domain contains a login form.");
+        }
+
+        sendResponse(fusionResult);
+        return true;
+    }
 });
 
 function updateBadge(score, tabId) {
